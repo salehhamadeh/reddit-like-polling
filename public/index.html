@@ -11,26 +11,44 @@
     <script src="lib/mustache.min.js"></script>
     <script>
       var socket = io();
-      $(function() {
-        var topic_template = $('#topic-template').html();
-        Mustache.parse(topic_template);
-        var rendered = Mustache.render(topic_template, {name: "D3.js", votes:100});
+      var topic_template;
+
+      socket.on('new topic', function(data) {
+        var rendered = Mustache.render(topic_template, data);
         $('#topics').append($('<li>').html(rendered));
-        /*$('form').submit(function(e) {
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
+      });
+
+      $(function() {
+        topic_template = $('#topic-template').html();
+        Mustache.parse(topic_template);
+
+        $('form').submit(function() {
+          var $owner = $('form input[name=owner]');
+          var $topic = $('form input[name=topic]');
+
+          socket.emit('new topic', {
+            owner: $owner.val(),
+            topic: $topic.val()
+          });
+
+          $owner.val('');
+          $topic.val('');
           return false;
         });
 
-        socket.on('chat message', function(msg) {
+        /*socket.on('chat message', function(msg) {
           $('#messages').append($('<li>').text(msg));
         });*/
-
       });
     </script>
   </head>
   <body>
     <ul id="topics"></ul>
+    <form action="">
+      <input type="text" name="owner" />
+      <input type="text" name="topic" />
+      <input type="submit" value="Submit" />
+    </form>
 
     <script id="topic-template" type="x-tmpl-mustache">
       <div class="upvote">
@@ -38,7 +56,8 @@
           <span class="count">{{votes}}</span>
           <a class="downvote"></a>
       </div>
-      <p class="topic-name">{{name}}</p>
+      <p class="topic-name">{{topic}}</p>
+      <span class="topic-owner">{{owner}}</span>
     </script>
   </body>
 </html>
