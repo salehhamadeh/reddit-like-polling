@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" type="text/css" href="lib/jquery.upvote.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="lib/jquery.upvote.js"></script>
+    <script src="lib/mustache.min.js"></script>
+    <script>
+      var socket = io();
+      $(function() {
+        var topic_template = $('#topic-template').html();
+        Mustache.parse(topic_template);
+        var rendered = Mustache.render(topic_template, {name: "D3.js", votes:100});
+        $('#topics').append($('<li>').html(rendered));
+        /*$('form').submit(function(e) {
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+
+        socket.on('chat message', function(msg) {
+          $('#messages').append($('<li>').text(msg));
+        });*/
+
+      });
+    </script>
+  </head>
+  <body>
+    <ul id="topics"></ul>
+
+    <script id="topic-template" type="x-tmpl-mustache">
+      <div class="upvote">
+          <a class="upvote"></a>
+          <span class="count">{{votes}}</span>
+          <a class="downvote"></a>
+      </div>
+      <p class="topic-name">{{name}}</p>
+    </script>
+  </body>
+</html>
