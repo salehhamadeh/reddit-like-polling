@@ -25,6 +25,8 @@
           var rendered = Mustache.render(topic_template, topic_data);
           $('#topics').append(rendered);
         });
+
+        sortTopicsList();
       });
 
       socket.on('update topic', function(data) {
@@ -35,6 +37,8 @@
         } else {
           $topic.find('.vote-button').removeClass('voted');
         }
+
+        sortTopicsList();
       });
 
       socket.on('request userid', function(uid) {
@@ -78,11 +82,23 @@
           userid = localStorage['userid'];
 
           // Download the topics from the server
-          socket.emit('request topics', userid);
+          socket.emit('verify userid', userid);
         } else {
           socket.emit('request userid');
         }
       });
+
+      function sortTopicsList() {
+        var list = $('#topics');
+        var listitems = list.children('li').get();
+
+        // Sort in descending order
+        listitems.sort(function(a, b) {
+           return $(b).find('.count').text() - $(a).find('.count').text();
+        });
+
+        $.each(listitems, function(idx, itm) { list.append(itm); });
+      }
     </script>
   </head>
   <body>

@@ -4,15 +4,20 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var topics = [];
+var clients = [];
 var nUsers = 0;
 
 app.use(express.static('public'));
 
 io.on('connection', function(socket) {
+	clients.push(socket);
 	console.log('a user connected');
 
 	socket.on('disconnect', function() {
 		console.log('user disconnected');
+		var i = clients.indexOf(socket);
+		clients.splice(i, 1);
+		console.log("Connected users: " + clients.length);
 	});
 
 	socket.on('new topic', function(data) {
@@ -31,20 +36,30 @@ io.on('connection', function(socket) {
 	socket.on('request topics', function(userid) {
 		socket.emit('request topics', topics.map(function(topic) {
 			var ret = clone(topic);
-			ret.didVote = (userid in ret.votes);
+			ret.didVote = (ret.votes.indexOf(userid) > -1);
 			ret.votes = topic.votes.length;
 			return ret;
 		}));
 	});
 
 	socket.on('request userid', function() {
-		socket.emit('request userid', nUsers++);
-	})
+		var userid = nUsers++;
+		var i = clients.indexOf(socket);
+		clients[i].userid = userid;
+		socket.emit('request userid', userid);
+	});
 
+	socket.on('verify userid', function(userid) {
+		var i = clients.indexOf(socket);
+		clients[i].userid = userid;
+
+		socket.emit('request userid', userid);
+	});
+	
 	socket.on('toggle vote', function(data) {
 		// If the user had already voted, remove vote. Otherwise, add vote.
 		var topic = clone(topics[data.topicId]);
-		if (data.userid in topic.votes) {
+		if (topic.votes.indexOf(data.userid) > -1) {
 			console.log("YES");
 			var index = topic.votes.indexOf(data.userid);
 			topics[data.topicId].votes.splice(index, 1);
@@ -53,11 +68,16 @@ io.on('connection', function(socket) {
 			topics[data.topicId].votes.push(data.userid);
 		}
 
-		// Only send the number of votes to client
-		topic.didVote = (data.userid in topics[data.topicId].votes);
 		topic.votes = topics[data.topicId].votes.length;
+		console.log(data);
 
-		io.emit('update topic', topic);
+		// Update the votes on all clients
+		for (var i = 0; i < clients.length; i++) {
+			console.log(clients[i].userid);
+			topic.didVote = (topics[data.topicId].votes.indexOf(clients[i].userid) > -1);
+
+			clients[i].emit('update topic', topic);
+		}
 	});
 });
 
