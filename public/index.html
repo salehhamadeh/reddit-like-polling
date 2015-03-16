@@ -13,7 +13,14 @@
 
       socket.on('new topic', function(data) {
         var rendered = Mustache.render(topic_template, data);
-        $('#topics').append($('<li>').html(rendered));
+        $('#topics').append(rendered);
+      });
+
+      socket.on('request topics', function(topics) {
+        topics.forEach(function(topic_data) {
+          var rendered = Mustache.render(topic_template, topic_data);
+          $('#topics').append(rendered);
+        });
       });
 
       $(function() {
@@ -34,6 +41,9 @@
           return false;
         });
 
+        // Download the topics from the server
+        socket.emit('request topics');
+
         /*socket.on('chat message', function(msg) {
           $('#messages').append($('<li>').text(msg));
         });*/
@@ -49,12 +59,14 @@
     </form>
 
     <script id="topic-template" type="x-tmpl-mustache">
-      <div class="vote">
-          <span class="count">{{votes}}</span>
-          <div class="vote-button"></div>
-      </div>
-      <p class="topic-name">{{topic}}</p>
-      <span class="topic-owner">Suggested by {{owner}}</span>
+      <li data-id="{{id}}">
+        <div class="vote">
+            <span class="count">{{votes}}</span>
+            <div class="vote-button"></div>
+        </div>
+        <p class="topic-name">{{topic}}</p>
+        <span class="topic-owner">Suggested by {{owner}}</span>
+      </li>
     </script>
   </body>
 </html>
