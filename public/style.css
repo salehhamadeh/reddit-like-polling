@@ -34,6 +34,10 @@ body {
 	background-color: #2fa;
 }
 
+.voted {
+	background-color: #2f6;
+}
+
 .topic-owner {
 	position: absolute;
 	right: 10px;

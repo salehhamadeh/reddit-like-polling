@@ -28,9 +28,10 @@ io.on('connection', function(socket) {
 		console.log('new topic added!');
 	});
 
-	socket.on('request topics', function() {
+	socket.on('request topics', function(userid) {
 		socket.emit('request topics', topics.map(function(topic) {
 			var ret = clone(topic);
+			ret.didVote = (userid in ret.votes);
 			ret.votes = topic.votes.length;
 			return ret;
 		}));
@@ -53,6 +54,7 @@ io.on('connection', function(socket) {
 		}
 
 		// Only send the number of votes to client
+		topic.didVote = (data.userid in topics[data.topicId].votes);
 		topic.votes = topics[data.topicId].votes.length;
 
 		io.emit('update topic', topic);

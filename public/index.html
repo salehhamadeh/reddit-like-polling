@@ -30,11 +30,19 @@
       socket.on('update topic', function(data) {
         var $topic = $('#topics li[data-id=' + data.id + ']');
         $topic.find('.count').text(data.votes);
+        if (data.didVote) {
+          $topic.find('.vote-button').addClass('voted');
+        } else {
+          $topic.find('.vote-button').removeClass('voted');
+        }
       });
 
       socket.on('request userid', function(uid) {
         userid = uid;
         localStorage['userid'] = userid;
+
+        // Download the topics from the server
+        socket.emit('request topics', userid);
       });
 
       $(function() {
@@ -68,12 +76,12 @@
         // If userid is not in localStorage, request a new one.
         if ('userid' in localStorage) {
           userid = localStorage['userid'];
+
+          // Download the topics from the server
+          socket.emit('request topics', userid);
         } else {
           socket.emit('request userid');
         }
-
-        // Download the topics from the server
-        socket.emit('request topics');
       });
     </script>
   </head>
@@ -89,7 +97,7 @@
       <li data-id="{{id}}">
         <div class="vote">
             <span class="count">{{votes}}</span>
-            <div class="vote-button"></div>
+            <div class="vote-button {{#didVote}}voted{{/didVote}}"></div>
         </div>
         <p class="topic-name">{{topic}}</p>
         <span class="topic-owner">Suggested by {{owner}}</span>
