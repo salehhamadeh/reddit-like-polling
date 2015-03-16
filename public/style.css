@@ -1,3 +1,8 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
 #topics {
 	list-style-type: none;
 	margin: 0;
@@ -34,4 +39,17 @@
 	right: 10px;
 	bottom: 10px;
 	color: #333;
+}
+
+#submit-topic-form {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	z-index: 1;
+	margin: 0 auto;
+	padding-bottom: 20px;
+	padding-top: 10px;
+	padding-left: 30px;
+	border-top: 2px solid #ccf;
+	background-color: #aaf;
 }

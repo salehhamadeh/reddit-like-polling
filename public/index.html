@@ -29,8 +29,8 @@
             topic: $topic.val()
           });
 
-          $owner.val('');
           $topic.val('');
+          $topic.focus();
           return false;
         });
 
@@ -42,9 +42,9 @@
   </head>
   <body>
     <ul id="topics"></ul>
-    <form action="">
-      <input type="text" name="owner" />
-      <input type="text" name="topic" />
+    <form id="submit-topic-form" action="">
+      <label for="owner">Owner:</label> <input type="text" name="owner" />
+      <label for="topic">Topic:</label> <input type="text" name="topic" />
       <input type="submit" value="Submit" />
     </form>
 
