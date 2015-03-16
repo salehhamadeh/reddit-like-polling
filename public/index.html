@@ -11,12 +11,15 @@
       var socket = io();
       var topic_template;
 
+      // When a new topic is added, append it to the list
       socket.on('new topic', function(data) {
         var rendered = Mustache.render(topic_template, data);
         $('#topics').append(rendered);
       });
 
+      // When server responds back with list of topics
       socket.on('request topics', function(topics) {
+        // Add the topics to the topics list
         topics.forEach(function(topic_data) {
           var rendered = Mustache.render(topic_template, topic_data);
           $('#topics').append(rendered);
@@ -24,9 +27,11 @@
       });
 
       $(function() {
+        // Parse the Mustache template
         topic_template = $('#topic-template').html();
         Mustache.parse(topic_template);
 
+        // Send new topic to server upon form submission
         $('form').submit(function() {
           var $owner = $('form input[name=owner]');
           var $topic = $('form input[name=topic]');
@@ -43,10 +48,6 @@
 
         // Download the topics from the server
         socket.emit('request topics');
-
-        /*socket.on('chat message', function(msg) {
-          $('#messages').append($('<li>').text(msg));
-        });*/
       });
     </script>
   </head>
