@@ -49,13 +49,12 @@
     </form>
 
     <script id="topic-template" type="x-tmpl-mustache">
-      <div class="upvote">
-          <a class="upvote"></a>
+      <div class="vote">
           <span class="count">{{votes}}</span>
-          <a class="downvote"></a>
+          <div class="vote-button"></div>
       </div>
       <p class="topic-name">{{topic}}</p>
-      <span class="topic-owner">{{owner}}</span>
+      <span class="topic-owner">Suggested by {{owner}}</span>
     </script>
   </body>
 </html>
