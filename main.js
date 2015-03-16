@@ -24,7 +24,12 @@ io.on('connection', function(socket) {
 
 	socket.on('request topics', function() {
 		socket.emit('request topics', topics);
-	})
+	});
+
+	socket.on('vote', function(topicId) {
+		topics[topicId].votes++;
+		io.emit('update topic', topics[topicId]);
+	});
 });
 
 http.listen(3000, function() {

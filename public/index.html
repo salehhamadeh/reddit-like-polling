@@ -26,6 +26,11 @@
         });
       });
 
+      socket.on('update topic', function(data) {
+        var $topic = $('#topics li[data-id=' + data.id + ']');
+        $topic.find('.count').text(data.votes);
+      });
+
       $(function() {
         // Parse the Mustache template
         topic_template = $('#topic-template').html();
@@ -44,6 +49,11 @@
           $topic.val('');
           $topic.focus();
           return false;
+        });
+
+        $('#topics').on('click', '.vote-button', function() {
+          var topicId = $(this).closest('li').attr('data-id');
+          socket.emit('vote', topicId);
         });
 
         // Download the topics from the server
