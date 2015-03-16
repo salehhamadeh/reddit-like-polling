@@ -10,6 +10,7 @@
     <script>
       var socket = io();
       var topic_template;
+      var userid;
 
       // When a new topic is added, append it to the list
       socket.on('new topic', function(data) {
@@ -29,6 +30,11 @@
       socket.on('update topic', function(data) {
         var $topic = $('#topics li[data-id=' + data.id + ']');
         $topic.find('.count').text(data.votes);
+      });
+
+      socket.on('request userid', function(uid) {
+        userid = uid;
+        localStorage['userid'] = userid;
       });
 
       $(function() {
@@ -53,8 +59,18 @@
 
         $('#topics').on('click', '.vote-button', function() {
           var topicId = $(this).closest('li').attr('data-id');
-          socket.emit('vote', topicId);
+          socket.emit('toggle vote', {
+            userid: userid,
+            topicId: topicId
+          });
         });
+
+        // If userid is not in localStorage, request a new one.
+        if ('userid' in localStorage) {
+          userid = localStorage['userid'];
+        } else {
+          socket.emit('request userid');
+        }
 
         // Download the topics from the server
         socket.emit('request topics');
